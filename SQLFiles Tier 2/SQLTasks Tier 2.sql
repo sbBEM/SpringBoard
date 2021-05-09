@@ -85,7 +85,16 @@ WHERE joindate = (
 Include in your output the name of the court, and the name of the member
 formatted as a single column. Ensure no duplicate data, and order by
 the member name. */
-
+USE country_club;
+SELECT DISTINCT
+	CONCAT(m.firstname, ' ', m.surname) as membername
+FROM Facilities AS f
+INNER JOIN Bookings as b
+    USING(facid)
+INNER JOIN Members AS m
+    USING(memid)
+WHERE f.name LIKE 'Tennis Court%'
+ORDER BY membername
 
 /* Q8: Produce a list of bookings on the day of 2012-09-14 which
 will cost the member (or guest) more than $30. Remember that guests have
@@ -93,10 +102,45 @@ different costs to members (the listed costs are per half-hour 'slot'), and
 the guest user's ID is always 0. Include in your output the name of the
 facility, the name of the member formatted as a single column, and the cost.
 Order by descending cost, and do not use any subqueries. */
-
+USE country_club;
+SELECT 
+    f.name as facility, 
+    CONCAT(m.firstname, ' ', m.surname) as membername, 
+    CASE 
+        WHEN memid = 0 THEN f.guestcost * slots
+        ELSE f.membercost * slots END as cost
+FROM Bookings as b
+INNER JOIN Members as m
+    USING(memid)
+INNER JOIN Facilities as f
+    USING(facid)
+WHERE date(b.starttime) = '2012-09-14'
+HAVING cost > 30
+ORDER BY cost DESC
 
 /* Q9: This time, produce the same result as in Q8, but using a subquery. */
-
+USE country_club;
+SELECT 
+    sq.name as facility, 
+    CONCAT(sq.firstname, ' ', sq.surname) as membername, 
+    sq.cost * b.slots as bookedcost
+FROM (
+    SELECT facid, memid, name, firstname, surname, guestcost as cost
+    FROM Members
+    INNER JOIN Facilities
+    WHERE memid = 0
+	UNION
+    SELECT facid, memid, name, firstname, surname, membercost as cost
+    FROM Members
+    INNER JOIN Facilities
+    WHERE memid != 0
+	)  as sq
+INNER JOIN Bookings as b
+	ON sq.facid = b.facid
+	AND sq.memid = b.memid
+WHERE date(b.starttime) = '2012-09-14'
+HAVING bookedcost > 30
+ORDER BY bookedcost DESC
 
 /* PART 2: SQLite
 
