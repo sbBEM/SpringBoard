@@ -147,6 +147,9 @@ ORDER BY bookedcost DESC
 Export the country club data from PHPMyAdmin, and connect to a local SQLite instance from Jupyter notebook 
 for the following questions.  
 
+Remaining solutions are found at: 
+https://github.com/sbBEM/SpringBoard/blob/main/SQLFiles%20Tier%202/country_club.ipynb
+
 QUESTIONS:
 /* Q10: Produce a list of facilities with a total revenue less than 1000.
 The output of facility name and total revenue, sorted by revenue. Remember
